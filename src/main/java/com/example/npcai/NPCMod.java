@@ -9,5 +9,6 @@ public class NPCMod implements ModInitializer {
     public void onInitialize() {
         ModEntities.register();
         ModScreenHandlers.register();
+        NPCCommands.register();
     }
 }

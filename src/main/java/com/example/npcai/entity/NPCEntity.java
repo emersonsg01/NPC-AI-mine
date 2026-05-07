@@ -35,7 +35,7 @@ public class NPCEntity extends PathAwareEntity implements Inventory {
     public NPCEntity(EntityType<? extends NPCEntity> type, World world) {
         super(type, world);
         this.setHealth(this.getMaxHealth());
-        this.npcBehavior = new NPCBehavior(this, NPCBehavior.Role.EXPLORER);
+        this.npcBehavior = new NPCBehavior(this, NPCBehavior.Role.FOLLOWER);
     }
 
     public NPCBehavior getBehavior() {
