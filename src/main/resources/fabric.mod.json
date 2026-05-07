@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "npcai",
+  "version": "${version}",
+  "name": "NPC AI Mod",
+  "description": "Mod básico com entidade NPC customizada inspirada no Player2 AI NPC.",
+  "authors": ["generated"],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["com.example.npcai.NPCMod"],
+    "client": ["com.example.npcai.NPCClientMod"]
+  },
+  "depends": {
+    "fabricloader": ">=0.15.6",
+    "fabric": "*"
+  }
+}
