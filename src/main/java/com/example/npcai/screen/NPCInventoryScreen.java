@@ -9,12 +9,12 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class NPCInventoryScreen extends HandledScreen<NPCInventoryScreenHandler> {
-    private static final Identifier BACKGROUND = new Identifier("minecraft", "textures/gui/container/generic_9x1.png");
+    private static final Identifier BACKGROUND = new Identifier("minecraft", "textures/gui/container/generic_9x3.png");
 
     public NPCInventoryScreen(NPCInventoryScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
         this.backgroundWidth = 176;
-        this.backgroundHeight = 114;
+        this.backgroundHeight = 166;
         this.titleX = 8;
         this.titleY = 6;
     }

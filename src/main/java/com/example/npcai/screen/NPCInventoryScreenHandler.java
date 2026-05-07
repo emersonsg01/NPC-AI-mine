@@ -1,9 +1,11 @@
 package com.example.npcai.screen;
 
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -20,18 +22,25 @@ public class NPCInventoryScreenHandler extends ScreenHandler {
         this.inventory = inventory;
         inventory.onOpen(playerInventory.player);
 
-        for (int i = 0; i < inventory.size(); i++) {
-            this.addSlot(new Slot(inventory, i, 62 + i * 18, 17));
+        this.addSlot(new EquipmentSlotSlot(inventory, 9, 8, 17, EquipmentSlot.MAINHAND));
+        this.addSlot(new EquipmentSlotSlot(inventory, 10, 26, 17, EquipmentSlot.OFFHAND));
+        this.addSlot(new EquipmentSlotSlot(inventory, 11, 44, 17, EquipmentSlot.HEAD));
+        this.addSlot(new EquipmentSlotSlot(inventory, 12, 62, 17, EquipmentSlot.CHEST));
+        this.addSlot(new EquipmentSlotSlot(inventory, 13, 80, 17, EquipmentSlot.LEGS));
+        this.addSlot(new EquipmentSlotSlot(inventory, 14, 98, 17, EquipmentSlot.FEET));
+
+        for (int i = 0; i < 9; i++) {
+            this.addSlot(new Slot(inventory, i, 8 + i * 18, 39));
         }
 
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
-                this.addSlot(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 50 + row * 18));
+                this.addSlot(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 72 + row * 18));
             }
         }
 
         for (int col = 0; col < 9; col++) {
-            this.addSlot(new Slot(playerInventory, col, 8 + col * 18, 108));
+            this.addSlot(new Slot(playerInventory, col, 8 + col * 18, 130));
         }
     }
 
@@ -66,6 +75,31 @@ public class NPCInventoryScreenHandler extends ScreenHandler {
         }
 
         return result;
+    }
+
+    private static class EquipmentSlotSlot extends Slot {
+        private final EquipmentSlot equipmentSlot;
+
+        public EquipmentSlotSlot(Inventory inventory, int index, int x, int y, EquipmentSlot equipmentSlot) {
+            super(inventory, index, x, y);
+            this.equipmentSlot = equipmentSlot;
+        }
+
+        @Override
+        public boolean canInsert(ItemStack stack) {
+            if (stack.isEmpty()) {
+                return true;
+            }
+            if (equipmentSlot == EquipmentSlot.MAINHAND || equipmentSlot == EquipmentSlot.OFFHAND) {
+                return true;
+            }
+            return stack.getItem() instanceof ArmorItem armorItem && armorItem.getSlotType() == equipmentSlot;
+        }
+
+        @Override
+        public int getMaxItemCount() {
+            return 1;
+        }
     }
 
     @Override
