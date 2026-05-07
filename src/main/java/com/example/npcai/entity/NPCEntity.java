@@ -2,6 +2,7 @@ package com.example.npcai.entity;
 
 import com.example.npcai.ModScreenHandlers;
 import com.example.npcai.NPCMod;
+import com.example.npcai.entity.NPCBehavior;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -29,17 +30,26 @@ public class NPCEntity extends PathAwareEntity implements Inventory {
     private static final int EQUIPMENT_SLOT_COUNT = 6;
     private static final int TOTAL_SLOT_COUNT = GENERAL_SLOT_COUNT + EQUIPMENT_SLOT_COUNT;
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(TOTAL_SLOT_COUNT, ItemStack.EMPTY);
+    private final NPCBehavior npcBehavior;
 
     public NPCEntity(EntityType<? extends NPCEntity> type, World world) {
         super(type, world);
         this.setHealth(this.getMaxHealth());
+        this.npcBehavior = new NPCBehavior(this, NPCBehavior.Role.EXPLORER);
+    }
+
+    public NPCBehavior getBehavior() {
+        return this.npcBehavior;
+    }
+
+    public void setRole(NPCBehavior.Role role) {
+        this.npcBehavior.setRole(role);
     }
 
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0));
-        this.goalSelector.add(7, new LookAroundGoal(this));
+        this.npcBehavior.applyBehavior();
     }
 
     public static DefaultAttributeContainer.Builder createNPCAttributes() {
