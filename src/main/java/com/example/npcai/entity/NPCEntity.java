@@ -1,10 +1,9 @@
 package com.example.npcai.entity;
 
 import com.example.npcai.ModScreenHandlers;
-import com.example.npcai.NPCMod;
+import com.example.npcai.NPCInventory;
 import com.example.npcai.entity.NPCBehavior;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
@@ -13,28 +12,20 @@ import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.PathAwareEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
-public class NPCEntity extends PathAwareEntity implements Inventory {
-    private static final int GENERAL_SLOT_COUNT = 9;
-    private static final int EQUIPMENT_SLOT_COUNT = 6;
-    private static final int TOTAL_SLOT_COUNT = GENERAL_SLOT_COUNT + EQUIPMENT_SLOT_COUNT;
-    private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(TOTAL_SLOT_COUNT, ItemStack.EMPTY);
+public class NPCEntity extends PathAwareEntity {
+    private final NPCInventory inventory;
     private final NPCBehavior npcBehavior;
 
     public NPCEntity(EntityType<? extends NPCEntity> type, World world) {
         super(type, world);
         this.setHealth(this.getMaxHealth());
+        this.inventory = new NPCInventory(this);
         this.npcBehavior = new NPCBehavior(this, NPCBehavior.Role.FOLLOWER);
     }
 
@@ -63,13 +54,13 @@ public class NPCEntity extends PathAwareEntity implements Inventory {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        Inventories.writeNbt(nbt, inventory);
+        inventory.writeNbt(nbt);
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        Inventories.readNbt(nbt, inventory);
+        inventory.readNbt(nbt);
     }
 
     @Override
@@ -123,9 +114,8 @@ public class NPCEntity extends PathAwareEntity implements Inventory {
         }
     }
 
-    @Override
-    public boolean canPlayerUse(PlayerEntity player) {
-        return this.world.getClosestPlayer(this, 8.0) == player;
+    public NPCInventory getInventory() {
+        return this.inventory;
     }
 
     @Override
@@ -134,50 +124,13 @@ public class NPCEntity extends PathAwareEntity implements Inventory {
             return ActionResult.SUCCESS;
         }
 
-        NamedScreenHandlerFactory factory = new SimpleNamedScreenHandlerFactory(
-                (syncId, playerInventory, playerEntity) -> new NPCInventoryScreenHandler(syncId, playerInventory, this.inventory),
-                Text.translatable("container.npcai.npc_inventory")
-        );
-
-        player.openHandledScreen(factory);
+        player.openHandledScreen(this.inventory.createScreenHandlerFactory());
         return ActionResult.CONSUME;
-    }
-
-    @Override
-    public void clear() {
-        inventory.clear();
-        for (int slot = GENERAL_SLOT_COUNT; slot < TOTAL_SLOT_COUNT; slot++) {
-            this.updateEquipmentSlot(slot, ItemStack.EMPTY);
-        }
     }
 
     @Override
     public void markDirty() {
         super.markDirty();
-    }
-
-    private void updateEquipmentSlot(int slot, ItemStack stack) {
-        EquipmentSlot equipmentSlot = switch (slot) {
-            case GENERAL_SLOT_COUNT -> EquipmentSlot.MAINHAND;
-            case GENERAL_SLOT_COUNT + 1 -> EquipmentSlot.OFFHAND;
-            case GENERAL_SLOT_COUNT + 2 -> EquipmentSlot.HEAD;
-            case GENERAL_SLOT_COUNT + 3 -> EquipmentSlot.CHEST;
-            case GENERAL_SLOT_COUNT + 4 -> EquipmentSlot.LEGS;
-            case GENERAL_SLOT_COUNT + 5 -> EquipmentSlot.FEET;
-            default -> null;
-        };
-
-        if (equipmentSlot != null) {
-            this.equipStack(equipmentSlot, stack);
-        }
-    }
-
-    @Override
-    public void onOpen(PlayerEntity player) {
-    }
-
-    @Override
-    public void onClose(PlayerEntity player) {
     }
 
     @Override
