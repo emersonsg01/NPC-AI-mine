@@ -7,6 +7,7 @@ import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -62,13 +63,13 @@ public class NPCBehavior {
         npc.goalSelector.remove(followGoal);
 
         switch (this.role) {
-            case MINER:
+                case MINER:
                 npc.goalSelector.add(3, mineGoal);
                 npc.goalSelector.add(5, exploreGoal);
                 break;
             case FIGHTER:
-                npc.goalSelector.add(3, attackGoal);
                 npc.targetSelector.add(1, targetHostilesGoal);
+                npc.goalSelector.add(2, attackGoal);
                 npc.goalSelector.add(6, exploreGoal);
                 break;
             case EXPLORER:
@@ -95,7 +96,7 @@ public class NPCBehavior {
                 return false;
             }
 
-            this.targetBlock = findTargetBlock(npc.getBlockPos());
+            this.targetBlock = findTargetOre(npc.getBlockPos());
             return this.targetBlock != null;
         }
 
@@ -122,21 +123,22 @@ public class NPCBehavior {
             if (distance <= 2.25) {
                 World world = npc.getWorld();
                 BlockState state = world.getBlockState(this.targetBlock);
-                if (!state.isAir() && state.getHardness(world, this.targetBlock) >= 0.0F) {
+                if (state.isIn(BlockTags.ORES) && state.getHardness(world, this.targetBlock) >= 0.0F) {
+                    npc.swingHand(npc.getActiveHand());
                     world.breakBlock(this.targetBlock, true);
                 }
                 this.targetBlock = null;
             }
         }
 
-        private BlockPos findTargetBlock(BlockPos origin) {
+        private BlockPos findTargetOre(BlockPos origin) {
             World world = npc.getWorld();
-            for (int y = -1; y <= 1; y++) {
+            for (int y = -2; y <= 2; y++) {
                 for (int x = -SEARCH_RADIUS; x <= SEARCH_RADIUS; x++) {
                     for (int z = -SEARCH_RADIUS; z <= SEARCH_RADIUS; z++) {
                         BlockPos pos = origin.add(x, y, z);
                         BlockState state = world.getBlockState(pos);
-                        if (!state.isAir() && state.getHardness(world, pos) >= 0.0F) {
+                        if (state.isIn(BlockTags.ORES) && state.getHardness(world, pos) >= 0.0F) {
                             return pos;
                         }
                     }
