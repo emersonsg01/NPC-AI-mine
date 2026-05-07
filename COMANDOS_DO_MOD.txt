@@ -1,0 +1,11 @@
+Comandos do Mod NPC AI
+
+1. /npc create <nome>
+   - Descrição: Cria um novo NPC personalizado no mundo.
+   - Funcionalidade: Gera uma entidade NPC com o nome especificado, comportamento padrão de seguir o jogador e inventário vazio.
+   - Uso: Digite o comando no chat do servidor ou no jogo como operador. Por exemplo:
+     /npc create Alex
+   - Observações:
+     * O NPC nasce na posição do jogador que executou o comando.
+     * O NPC já inicia com comportamento de seguir o jogador.
+     * O nome exibido do NPC será o texto informado.

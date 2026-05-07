@@ -10,6 +10,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 
+/**
+ * NPCInventoryScreenHandler bridges the NPCInventory with the player's inventory GUI.
+ */
 public class NPCInventoryScreenHandler extends ScreenHandler {
     private final Inventory inventory;
 
@@ -22,6 +25,7 @@ public class NPCInventoryScreenHandler extends ScreenHandler {
         this.inventory = inventory;
         inventory.onOpen(playerInventory.player);
 
+        // Equipment slots for weapon, shield, and armor.
         this.addSlot(new EquipmentSlotSlot(inventory, 9, 8, 17, EquipmentSlot.MAINHAND));
         this.addSlot(new EquipmentSlotSlot(inventory, 10, 26, 17, EquipmentSlot.OFFHAND));
         this.addSlot(new EquipmentSlotSlot(inventory, 11, 44, 17, EquipmentSlot.HEAD));
@@ -29,16 +33,19 @@ public class NPCInventoryScreenHandler extends ScreenHandler {
         this.addSlot(new EquipmentSlotSlot(inventory, 13, 80, 17, EquipmentSlot.LEGS));
         this.addSlot(new EquipmentSlotSlot(inventory, 14, 98, 17, EquipmentSlot.FEET));
 
+        // NPC general inventory slots.
         for (int i = 0; i < 9; i++) {
             this.addSlot(new Slot(inventory, i, 8 + i * 18, 39));
         }
 
+        // Player inventory slots.
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
                 this.addSlot(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 72 + row * 18));
             }
         }
 
+        // Player hotbar.
         for (int col = 0; col < 9; col++) {
             this.addSlot(new Slot(playerInventory, col, 8 + col * 18, 130));
         }
@@ -77,6 +84,9 @@ public class NPCInventoryScreenHandler extends ScreenHandler {
         return result;
     }
 
+    /**
+     * Restricts what can be inserted into equipment slots.
+     */
     private static class EquipmentSlotSlot extends Slot {
         private final EquipmentSlot equipmentSlot;
 

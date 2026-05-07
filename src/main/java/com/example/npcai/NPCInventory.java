@@ -3,7 +3,6 @@ package com.example.npcai;
 import com.example.npcai.entity.NPCEntity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -13,6 +12,10 @@ import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 
+/**
+ * NPCInventory encapsulates the NPC's inventory and equipment logic.
+ * It also provides the GUI factory for opening the NPC's inventory screen.
+ */
 public class NPCInventory implements Inventory {
     public static final int GENERAL_SLOT_COUNT = 9;
     public static final int EQUIPMENT_SLOT_COUNT = 6;
@@ -25,6 +28,9 @@ public class NPCInventory implements Inventory {
         this.owner = owner;
     }
 
+    /**
+     * Returns the screen handler factory used by the NPC when the player interacts with it.
+     */
     public NamedScreenHandlerFactory createScreenHandlerFactory() {
         return new SimpleNamedScreenHandlerFactory(
                 (syncId, playerInventory, playerEntity) -> new com.example.npcai.screen.NPCInventoryScreenHandler(syncId, playerInventory, this),
@@ -32,10 +38,16 @@ public class NPCInventory implements Inventory {
         );
     }
 
+    /**
+     * Writes inventory contents to NBT.
+     */
     public void writeNbt(NbtCompound nbt) {
         Inventories.writeNbt(nbt, items);
     }
 
+    /**
+     * Reads inventory contents from NBT and reapplies equipment.
+     */
     public void readNbt(NbtCompound nbt) {
         Inventories.readNbt(nbt, items);
         updateAllEquipment();
@@ -127,13 +139,16 @@ public class NPCInventory implements Inventory {
 
     @Override
     public void markDirty() {
+        // Inventory changes are applied immediately to the NPC entity.
     }
 
     @Override
     public void onOpen(PlayerEntity player) {
+        // Nothing to do when the inventory is opened.
     }
 
     @Override
     public void onClose(PlayerEntity player) {
+        // Nothing to do when the inventory is closed.
     }
 }

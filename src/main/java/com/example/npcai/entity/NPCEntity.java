@@ -1,14 +1,11 @@
 package com.example.npcai.entity;
 
-import com.example.npcai.ModScreenHandlers;
 import com.example.npcai.NPCInventory;
-import com.example.npcai.entity.NPCBehavior;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
-import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.PathAwareEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,31 +15,46 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
+/**
+ * NPCEntity is the custom mob representing the NPC.
+ * It delegates inventory handling to NPCInventory and AI to NPCBehavior.
+ */
 public class NPCEntity extends PathAwareEntity {
     private final NPCInventory inventory;
-    private final NPCBehavior npcBehavior;
+    private final NPCBehavior behavior;
 
     public NPCEntity(EntityType<? extends NPCEntity> type, World world) {
         super(type, world);
         this.setHealth(this.getMaxHealth());
         this.inventory = new NPCInventory(this);
-        this.npcBehavior = new NPCBehavior(this, NPCBehavior.Role.FOLLOWER);
+        this.behavior = new NPCBehavior(this, NPCBehavior.Role.FOLLOWER);
     }
 
+    /**
+     * Returns the NPC behavior controller.
+     */
     public NPCBehavior getBehavior() {
-        return this.npcBehavior;
+        return behavior;
     }
 
+    /**
+     * Change the NPC's active role.
+     */
     public void setRole(NPCBehavior.Role role) {
-        this.npcBehavior.setRole(role);
+        behavior.setRole(role);
     }
 
     @Override
     protected void initGoals() {
-        this.goalSelector.add(0, new SwimGoal(this));
-        this.npcBehavior.applyBehavior();
+        // Always allow the NPC to swim when needed.
+        goalSelector.add(0, new SwimGoal(this));
+        goalSelector.add(7, new LookAroundGoal(this));
+        behavior.applyBehavior();
     }
 
+    /**
+     * Defines the NPC's default attributes.
+     */
     public static DefaultAttributeContainer.Builder createNPCAttributes() {
         return PathAwareEntity.createMobAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0)
@@ -63,68 +75,19 @@ public class NPCEntity extends PathAwareEntity {
         inventory.readNbt(nbt);
     }
 
-    @Override
-    public int size() {
-        return inventory.size();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        for (ItemStack itemStack : inventory) {
-            if (!itemStack.isEmpty()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public ItemStack getStack(int slot) {
-        return inventory.get(slot);
-    }
-
-    @Override
-    public ItemStack removeStack(int slot, int amount) {
-        ItemStack removed = Inventories.splitStack(inventory, slot, amount);
-        if (slot >= GENERAL_SLOT_COUNT) {
-            this.updateEquipmentSlot(slot, inventory.get(slot));
-        }
-        return removed;
-    }
-
-    @Override
-    public ItemStack removeStack(int slot) {
-        ItemStack removed = Inventories.removeStack(inventory, slot);
-        if (slot >= GENERAL_SLOT_COUNT) {
-            this.updateEquipmentSlot(slot, ItemStack.EMPTY);
-        }
-        return removed;
-    }
-
-    @Override
-    public void setStack(int slot, ItemStack stack) {
-        if (slot >= GENERAL_SLOT_COUNT && stack.getCount() > 1) {
-            stack = stack.copy();
-            stack.setCount(1);
-        }
-
-        inventory.set(slot, stack);
-        if (slot >= GENERAL_SLOT_COUNT) {
-            this.updateEquipmentSlot(slot, stack);
-        }
-    }
-
+    /**
+     * Exposes the NPC inventory so other systems can query or clear it.
+     */
     public NPCInventory getInventory() {
-        return this.inventory;
+        return inventory;
     }
 
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
-        if (this.world.isClient) {
+        if (world.isClient) {
             return ActionResult.SUCCESS;
         }
-
-        player.openHandledScreen(this.inventory.createScreenHandlerFactory());
+        player.openHandledScreen(inventory.createScreenHandlerFactory());
         return ActionResult.CONSUME;
     }
 

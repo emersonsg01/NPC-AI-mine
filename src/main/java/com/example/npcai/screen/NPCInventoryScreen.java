@@ -8,6 +8,9 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+/**
+ * NPCInventoryScreen renders the NPC inventory and player inventory GUI.
+ */
 public class NPCInventoryScreen extends HandledScreen<NPCInventoryScreenHandler> {
     private static final Identifier BACKGROUND = new Identifier("minecraft", "textures/gui/container/generic_9x3.png");
 

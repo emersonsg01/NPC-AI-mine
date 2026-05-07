@@ -14,6 +14,9 @@ import net.minecraft.world.World;
 
 import java.util.EnumSet;
 
+/**
+ * NPCBehavior encapsulates the AI roles available for the NPC.
+ */
 public class NPCBehavior {
     public enum Role {
         MINER,
@@ -40,6 +43,9 @@ public class NPCBehavior {
         this.followGoal = new FollowPlayerGoal();
     }
 
+    /**
+     * Sets the active role and refreshes goal registration.
+     */
     public void setRole(Role role) {
         if (this.role != role) {
             this.role = role;
@@ -51,6 +57,9 @@ public class NPCBehavior {
         return this.role;
     }
 
+    /**
+     * Applies the currently assigned role when the NPC initializes.
+     */
     public void applyBehavior() {
         refreshGoals();
     }
@@ -63,7 +72,7 @@ public class NPCBehavior {
         npc.goalSelector.remove(followGoal);
 
         switch (this.role) {
-                case MINER:
+            case MINER:
                 npc.goalSelector.add(3, mineGoal);
                 npc.goalSelector.add(5, exploreGoal);
                 break;
@@ -82,6 +91,9 @@ public class NPCBehavior {
         }
     }
 
+    /**
+     * Goal that searches for nearby ore blocks and breaks them automatically.
+     */
     private class MineNearbyBlockGoal extends Goal {
         private static final int SEARCH_RADIUS = 5;
         private BlockPos targetBlock;
@@ -148,6 +160,9 @@ public class NPCBehavior {
         }
     }
 
+    /**
+     * Goal that keeps the NPC near the nearest player.
+     */
     private class FollowPlayerGoal extends Goal {
         private PlayerEntity targetPlayer;
 

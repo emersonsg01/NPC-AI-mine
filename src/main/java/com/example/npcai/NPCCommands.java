@@ -1,5 +1,6 @@
 package com.example.npcai;
 
+import com.example.npcai.entity.NPCBehavior;
 import com.example.npcai.entity.NPCEntity;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.argument.StringArgumentType;
@@ -9,6 +10,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 
+/**
+ * NPCCommands registers the /npc command family for creating and managing NPCs.
+ */
 public class NPCCommands {
     public static void register() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(
@@ -33,7 +37,9 @@ public class NPCCommands {
         npc.setCustomName(Text.literal(name));
         npc.setCustomNameVisible(true);
         npc.setPersistent();
-        npc.getBehavior().setRole(com.example.npcai.entity.NPCBehavior.Role.FOLLOWER);
+
+        // Use the follower role as the default behavior for newly created NPCs.
+        npc.getBehavior().setRole(NPCBehavior.Role.FOLLOWER);
 
         if (world.spawnEntity(npc)) {
             source.sendFeedback(Text.literal("Created NPC '" + name + "'."), true);
