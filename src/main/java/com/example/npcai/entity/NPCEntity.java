@@ -2,11 +2,12 @@ package com.example.npcai.entity;
 
 import com.example.npcai.NPCInventory;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
-import net.minecraft.entity.ai.pathing.PathAwareEntity;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -28,6 +29,14 @@ public class NPCEntity extends PathAwareEntity {
         this.setHealth(this.getMaxHealth());
         this.inventory = new NPCInventory(this);
         this.behavior = new NPCBehavior(this, NPCBehavior.Role.FOLLOWER);
+    }
+
+    public GoalSelector getGoalSelector() {
+        return this.goalSelector;
+    }
+
+    public GoalSelector getTargetSelector() {
+        return this.targetSelector;
     }
 
     /**
@@ -84,17 +93,13 @@ public class NPCEntity extends PathAwareEntity {
 
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
-        if (world.isClient) {
+        if (this.getWorld().isClient) {
             return ActionResult.SUCCESS;
         }
         player.openHandledScreen(inventory.createScreenHandlerFactory());
         return ActionResult.CONSUME;
     }
 
-    @Override
-    public void markDirty() {
-        super.markDirty();
-    }
 
     @Override
     public boolean isPushable() {

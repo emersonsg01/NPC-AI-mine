@@ -1,5 +1,6 @@
 package com.example.npcai;
 
+import com.example.npcai.entity.ModEntities;
 import net.fabricmc.api.ModInitializer;
 
 /**

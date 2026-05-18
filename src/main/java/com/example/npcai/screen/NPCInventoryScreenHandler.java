@@ -56,7 +56,10 @@ public class NPCInventoryScreenHandler extends ScreenHandler {
         return this.inventory.canPlayerUse(player);
     }
 
-    @Override
+    public ItemStack quickMove(PlayerEntity player, int index) {
+        return ItemStack.EMPTY;
+    }
+
     public ItemStack transferSlot(PlayerEntity player, int index) {
         var slot = this.slots.get(index);
         if (slot == null || !slot.hasStack()) {
@@ -113,8 +116,8 @@ public class NPCInventoryScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public void close(PlayerEntity player) {
-        super.close(player);
+    public void onClosed(PlayerEntity player) {
+        super.onClosed(player);
         this.inventory.onClose(player);
     }
 }

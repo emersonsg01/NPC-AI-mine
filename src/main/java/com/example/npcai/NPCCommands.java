@@ -1,9 +1,10 @@
 package com.example.npcai;
 
+import com.example.npcai.entity.ModEntities;
 import com.example.npcai.entity.NPCBehavior;
 import com.example.npcai.entity.NPCEntity;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.minecraft.command.argument.StringArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -23,13 +24,13 @@ public class NPCCommands {
         ));
     }
 
-    private static int createNPC(ServerCommandSource source, String name) throws Exception {
+    private static int createNPC(ServerCommandSource source, String name) {
         ServerPlayerEntity player = source.getPlayer();
         ServerWorld world = player.getServerWorld();
 
         NPCEntity npc = ModEntities.NPC_ENTITY.create(world);
         if (npc == null) {
-            source.sendFeedback(Text.literal("Failed to create NPC."), false);
+            source.sendFeedback(() -> Text.literal("Failed to create NPC."), false);
             return 0;
         }
 
@@ -42,11 +43,11 @@ public class NPCCommands {
         npc.getBehavior().setRole(NPCBehavior.Role.FOLLOWER);
 
         if (world.spawnEntity(npc)) {
-            source.sendFeedback(Text.literal("Created NPC '" + name + "'."), true);
+            source.sendFeedback(() -> Text.literal("Created NPC '" + name + "'."), true);
             return 1;
         }
 
-        source.sendFeedback(Text.literal("Failed to spawn NPC."), false);
+        source.sendFeedback(() -> Text.literal("Failed to spawn NPC."), false);
         return 0;
     }
 }

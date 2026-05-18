@@ -1,5 +1,6 @@
 package com.example.npcai;
 
+import com.example.npcai.screen.NPCInventoryScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 

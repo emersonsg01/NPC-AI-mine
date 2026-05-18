@@ -1,5 +1,6 @@
 package com.example.npcai;
 
+import com.example.npcai.screen.NPCInventoryScreenHandler;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;

@@ -7,7 +7,7 @@ import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -65,28 +65,28 @@ public class NPCBehavior {
     }
 
     private void refreshGoals() {
-        npc.goalSelector.remove(mineGoal);
-        npc.goalSelector.remove(attackGoal);
-        npc.targetSelector.remove(targetHostilesGoal);
-        npc.goalSelector.remove(exploreGoal);
-        npc.goalSelector.remove(followGoal);
+        npc.getGoalSelector().remove(mineGoal);
+        npc.getGoalSelector().remove(attackGoal);
+        npc.getTargetSelector().remove(targetHostilesGoal);
+        npc.getGoalSelector().remove(exploreGoal);
+        npc.getGoalSelector().remove(followGoal);
 
         switch (this.role) {
             case MINER:
-                npc.goalSelector.add(3, mineGoal);
-                npc.goalSelector.add(5, exploreGoal);
+                npc.getGoalSelector().add(3, mineGoal);
+                npc.getGoalSelector().add(5, exploreGoal);
                 break;
             case FIGHTER:
-                npc.targetSelector.add(1, targetHostilesGoal);
-                npc.goalSelector.add(2, attackGoal);
-                npc.goalSelector.add(6, exploreGoal);
+                npc.getTargetSelector().add(1, targetHostilesGoal);
+                npc.getGoalSelector().add(2, attackGoal);
+                npc.getGoalSelector().add(6, exploreGoal);
                 break;
             case EXPLORER:
-                npc.goalSelector.add(3, exploreGoal);
+                npc.getGoalSelector().add(3, exploreGoal);
                 break;
             case FOLLOWER:
-                npc.goalSelector.add(3, followGoal);
-                npc.goalSelector.add(5, exploreGoal);
+                npc.getGoalSelector().add(3, followGoal);
+                npc.getGoalSelector().add(5, exploreGoal);
                 break;
         }
     }
@@ -135,7 +135,7 @@ public class NPCBehavior {
             if (distance <= 2.25) {
                 World world = npc.getWorld();
                 BlockState state = world.getBlockState(this.targetBlock);
-                if (state.isIn(BlockTags.ORES) && state.getHardness(world, this.targetBlock) >= 0.0F) {
+                if (state.isIn(BlockTags.COAL_ORES) && state.getHardness(world, this.targetBlock) >= 0.0F) {
                     npc.swingHand(npc.getActiveHand());
                     world.breakBlock(this.targetBlock, true);
                 }
@@ -150,7 +150,7 @@ public class NPCBehavior {
                     for (int z = -SEARCH_RADIUS; z <= SEARCH_RADIUS; z++) {
                         BlockPos pos = origin.add(x, y, z);
                         BlockState state = world.getBlockState(pos);
-                        if (state.isIn(BlockTags.ORES) && state.getHardness(world, pos) >= 0.0F) {
+                        if (state.isIn(BlockTags.COAL_ORES) && state.getHardness(world, pos) >= 0.0F) {
                             return pos;
                         }
                     }
